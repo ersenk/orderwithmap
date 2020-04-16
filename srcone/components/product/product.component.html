@@ -1,0 +1,127 @@
+<div class="product-component animate-item">
+  <!-- skeleton text until data not loaded -->
+  <div *ngIf="p==1" style="padding-left: 10px;">
+    <ion-skeleton-text animated style="width: 100%; height: 110px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 80%; height: 15px;"></ion-skeleton-text>
+    <ion-skeleton-text animated style="width: 60%; height: 15px;">
+    </ion-skeleton-text>
+    <ion-skeleton-text animated *ngIf="config.cartButton==1" style="width: 100%; height: 25px;">
+    </ion-skeleton-text>
+
+  </div>
+
+  <div *ngIf="p!=1">
+
+    <ion-card *ngIf="type=='normal' || type=='recent' || type=='wishList' || type=='flash'" class="animated fadeIn">
+      <div>
+        <!--  <div *ngIf="p.discount_price!=null">{{pDiscount()}} {{'İNDİRİM'|translate}}</div>-->
+      </div>
+      <ion-img id="newimage" src="assets/badge_new.png" *ngIf="checkProductNew()"></ion-img>
+      <img id="image" src="{{config.imgUrl+p.image_thumb}}" (click)="showProductDetail()" (load)="loaded = true"
+        [ngClass]="{'img-loaded':loaded}" [hidden]="!loaded">
+      <ion-spinner [ngClass]="{'center':true}" *ngIf="!loaded"></ion-spinner>
+      <div class="product-name-box">
+        <p (click)="showProductDetail()">{{p.products_name}}</p>
+      </div>
+      <ion-row class="ion-no-padding">
+        <ion-col class="ion-no-padding ion-text-center prices-holder">
+          <div class="discounted-price-holder">
+            <h4 class="card-price-normal-through" *ngIf="p.discount_price!=null">{{p.products_price|curency}}</h4>
+          </div>
+          <div class="normal-price-holder">
+            <h4 class="card-price-normal">{{p.products_price|curency}}</h4>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row class="ion-no-padding">
+        <ion-button *ngIf="type=='recent'" color="danger" (click)="removeRecent()">{{'Kaldır'|translate}}</ion-button>
+        <ion-button *ngIf="type=='wishList'" color="secondary" shape="round" fill="outline" (click)="addToCart(p)">
+          {{'ADD TO CART'|translate}}
+        </ion-button>
+      </ion-row>
+    </ion-card>
+
+    <!-- //====================================  list view for shop page ==================================== -->
+    <ion-item lines="none" *ngIf="type=='list'" class="animate-item">
+      <div class="img-div">
+        <!--    <div *ngIf="p.discount_price!=null" class="sale">{{'İNDİRİM'|translate}}</div> -->
+      </div>
+      <ion-thumbnail slot="start" class="typeListThumbnail">
+        <ion-img class="badge-img" src="assets/badge_new.png" *ngIf="checkProductNew()"></ion-img>
+        <img src="{{config.imgUrl+p.products_image}}" (click)="showProductDetail()">
+      </ion-thumbnail>
+      <ion-label style="text-overflow: unset; white-space: unset;">
+        <div class="list-product-text-holder">
+          <p (click)="showProductDetail()">{{p.products_name}}</p>
+        </div>
+        <p class="list-price-normal" *ngIf="p.discount_price==null">{{p.products_price}} TL</p>
+        <p class="list-price-normal">
+          <span class="list-price-normal-through" *ngIf="p.discount_price!=null">{{p.products_price}} TL</span><br>
+          <span class="list-price-discounted-price">
+            {{p.discount_price}} TL
+          </span>
+        </p>
+      </ion-label>
+    </ion-item>
+  </div>
+</div>
+<div *ngIf="type=='list'">
+  <div class="cart-pop-up" *ngIf="!isInCart()" (click)="toggleCartPopUp()">
+    <ion-icon class="add-to-cart-button cart-pop-up" *ngIf="config.cartButton==1 && p.products_type==0"
+      (click)="addToCart(p)" name="add-circle-outline"></ion-icon>
+  </div>
+  <div class="basket-amount cart-pop-up" *ngIf="isInCart() && !toggleCartComponent" (click)="toggleCartPopUp()">
+    <small class="cart-pop-up">{{basketQuantity}}</small>
+  </div>
+  <div class="div-cart-btn cart-pop-up" *ngIf="toggleCartComponent && shared.isCartPopUpOpen">
+    <ion-row class="cart-pop-up">
+      <ion-col class="cart-pop-up" size="4" class="cart-pop-up">
+        <ion-button class="cart-pop-up remove-card-btn" fill="clear" size="small" (click)="removeCart(p.products_id)"
+          *ngIf="basketQuantity == p.products_min_order">
+          <ion-icon name="trash" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button class="cart-pop-up" size="small" fill="clear" (click)="qunatityMinus(p)"
+          *ngIf="basketQuantity > p.products_min_order">
+          <p class="cart-pop-up">-</p>
+        </ion-button>
+      </ion-col>
+      <ion-col class="cart-pop-up basket-quantity-holder-col" size="4"><span
+          class="cart-pop-up">{{basketQuantity}}</span></ion-col>
+      <ion-col class="cart-pop-up" size="4">
+        <ion-button class="cart-pop-up" class="add-btn" size="small" fill="clear" (click)="qunatityPlus(p)">
+          <p class="cart-pop-up">+</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</div>
+<div *ngIf="type=='normal'" class="normal-product-cart-popup">
+  <div class="cart-pop-up" *ngIf="!isInCart()" (click)="toggleCartPopUp()">
+    <ion-icon class="add-to-cart-button cart-pop-up" *ngIf="config.cartButton==1 && p.products_type==0"
+      (click)="addToCart(p)" name="add-circle-outline"></ion-icon>
+  </div>
+  <div class="basket-amount cart-pop-up" *ngIf="isInCart() && !toggleCartComponent" (click)="toggleCartPopUp()">
+    <small class="cart-pop-up">{{basketQuantity}}</small>
+  </div>
+  <div class="div-cart-btn cart-pop-up" *ngIf="toggleCartComponent && shared.isCartPopUpOpen">
+    <ion-row class="cart-pop-up">
+      <ion-col class="cart-pop-up" size="4" class="cart-pop-up">
+        <ion-button class="cart-pop-up remove-card-btn" fill="clear" size="small" (click)="removeCart(p.products_id)"
+          *ngIf="basketQuantity == p.products_min_order">
+          <ion-icon name="trash" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button class="cart-pop-up" size="small" fill="clear" (click)="qunatityMinus(p)"
+          *ngIf="basketQuantity > p.products_min_order">
+          <p class="cart-pop-up">-</p>
+        </ion-button>
+      </ion-col>
+      <ion-col class="cart-pop-up basket-quantity-holder-col" size="4"><span
+          class="cart-pop-up">{{basketQuantity}}</span></ion-col>
+      <ion-col class="cart-pop-up" size="4">
+        <ion-button class="cart-pop-up" class="add-btn" size="small" fill="clear" (click)="qunatityPlus(p)">
+          <p class="cart-pop-up">+</p>
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </div>
+</div>

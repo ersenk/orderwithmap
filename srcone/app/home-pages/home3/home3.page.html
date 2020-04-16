@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <ion-img *ngIf="config.appSettings.app_logo" src="{{config.imgUrl+config.appSettings.app_logo}}" alt="logo">
+      </ion-img>
+      <ion-img *ngIf="!config.appSettings.app_logo" src="../../../assets/osimdi.png" alt="logo"></ion-img>
+    </ion-title>
+
+  </ion-toolbar>
+</ion-header>
+<app-banner></app-banner>
+<ion-content class="ion-padding-bottom" (click)="hideCartPopoup($event)" (touchstart)="hideCartPopoupScroll($event)">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-item class="info-box" lines="none" style="margin: none">
+    <ion-grid fixed class="ion-no-padding">
+      <ion-row>
+        <ion-col size="7" class="info-col">
+          <ion-item lines="none" class="ion-no-padding" (click)="goToMyAdresses()">
+            <ion-avatar>
+              <ion-icon name="navigate"></ion-icon>
+            </ion-avatar>
+            <ion-label *ngIf="shared.customersDefaultAddress.length>0">
+              <p><b>{{shared.customersDefaultAddress[0].address_name}}: </b></p>
+              <p> {{shared.customersDefaultAddress[0].zone_name}}, ({{shared.customersDefaultAddress[0].street_name}}
+                {{shared.customersDefaultAddress[0].open_address}})</p>
+            </ion-label>
+            <ion-label *ngIf="shared.customersDefaultAddress.length == 0">
+              <p><b>Adres</b></p>
+              <p> Seçimi yapınız</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4" class="info-col">
+          <span class="info-text"> Min. Sepet Tutarı</span>
+          <p>
+            <ion-icon name="cash"></ion-icon> <span
+              *ngIf="config.freeShippingLimit == '' || !config.freeShippingLimit">-</span>
+            <span *ngIf="config.freeShippingLimit != ''">{{config.freeShippingLimit}}</span> TL
+          </p>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-item>
+  
+  
+
+  <div *ngIf="shared.campaigns.length>0" class="ion-padding" style="padding-bottom: 0px;">
+    <div *ngFor="let campaign of shared.campaigns">
+      <div *ngIf="campaign.slug=='special'">
+        <h3 class="main-h3">Fırsat Reyonu ({{campaign.product_data.length}} Ürün)</h3>
+      </div>
+      <ion-slides [options]="sliderConfig">
+        <ion-slide *ngFor="let p of campaign.product_data">
+          <app-product [data]="p" [type]="'list'"></app-product>
+        </ion-slide>
+      </ion-slides>
+    </div>
+  </div>
+  <div class="ion-padding" style="padding-top: 0px;">
+    <ion-grid class="main-categories" style="padding:0px;">
+      <ion-row>
+        <h3 class="main-h3" style="margin-left:0px;">{{'Kategoriler' | translate}}</h3>
+      </ion-row>
+      <ion-row>
+        <ion-col size="3">
+          <ion-card class="category-card card-favourites" (click)="goToMyWishList()">
+            <ion-icon name="star"></ion-icon>
+            <p>Favorilerim</p>
+          </ion-card>
+        </ion-col>
+        <ion-col size="3" *ngFor="let category of shared.categories">
+          <ion-card class="category-card" (click)="openCategories(category.id,category.name,'A - Z')">
+            <div class="category-image-holder" [style.backgroundImage]="'url(' + config.imgUrl+category.image + ')'">
+            </div>
+            <div class="category-card-white-space">
+              <p>{{category.name}}</p>
+            </div>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>

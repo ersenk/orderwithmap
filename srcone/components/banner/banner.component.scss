@@ -1,0 +1,20 @@
+ion-slides{
+    --bullet-background: black;
+    --bullet-background-active: #83af8c;
+    min-height: 180;
+}
+#map_canvas{
+    height: 220px;
+    width: 100%;
+}
+.map_delivery{
+    height: 220px;
+    width: 100%;
+}
+ion-app .nav-decor{
+    background-color: transparent !important;
+  }
+  #map{
+    height: 220px;
+    width: 100%;
+  }
